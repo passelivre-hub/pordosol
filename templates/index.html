@@ -1,0 +1,96 @@
+<!-- templates/index.html -->
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
+  <title>Cabanas Pôr do Sol</title>
+  <link rel="stylesheet" href="/static/style.css" />
+</head>
+<body>
+  <header class="topbar">
+    <div class="brand">
+      <h1>Cabanas Pôr do Sol</h1>
+    </div>
+  </header>
+
+  <main class="container">
+    <div class="controls">
+      <button id="novaReservaBtn" class="btn primary">Nova Reserva</button>
+      <div class="legend">
+        <span class="legend-item"><i class="dot reserved"></i> Reservado</span>
+        <span class="legend-item"><i class="dot note"></i> Observação</span>
+        <span class="legend-item"><i class="dot checked"></i> Check-in</span>
+      </div>
+    </div>
+
+    <section id="calendar" class="calendar" aria-label="Calendário"></section>
+  </main>
+
+  <!-- Modal -->
+  <div id="modal" class="modal hidden" aria-hidden="true">
+    <div class="modal-card" role="dialog" aria-modal="true">
+      <header class="modal-header">
+        <h2 id="modalTitle">Nova Reserva</h2>
+      </header>
+
+      <form id="reservationForm" class="form">
+        <input type="hidden" id="resId" />
+
+        <label>Chalé
+          <select id="chale">
+            <option value="1" selected>Chalé 1</option>
+            <option value="2">Chalé 2</option>
+            <option value="3">Chalé 3</option>
+          </select>
+        </label>
+
+        <label>Nome do hóspede
+          <input id="nome" type="text" placeholder="Nome completo" autocomplete="off" />
+        </label>
+
+        <label>WhatsApp
+          <div class="whatsapp-row">
+            <input id="whatsapp" type="tel" inputmode="numeric" maxlength="9" placeholder="Somente 9 dígitos" />
+            <button id="openWhatsApp" type="button" class="wa-btn" title="Abrir WhatsApp">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                <path d="M20.5 3.5L3.5 20.5V23h2.5L23 5.5V3.5z" fill="currentColor"/>
+              </svg>
+            </button>
+          </div>
+        </label>
+
+        <label>Valor (R$)
+          <input id="valor" type="text" placeholder="1.111,00" />
+        </label>
+
+        <label>Nº de pessoas
+          <input id="pessoas" type="number" min="1" value="2" />
+        </label>
+
+        <label>Check-in
+          <input id="checkin" type="date" />
+        </label>
+
+        <label>Check-out
+          <input id="checkout" type="date" />
+        </label>
+
+        <label>Observações
+          <textarea id="observacoes" rows="3" placeholder="Observações..."></textarea>
+        </label>
+
+        <div class="modal-actions">
+          <button id="btnSalvar" class="btn primary" type="submit">Salvar</button>
+          <button id="btnCheckin" type="button" class="btn" title="Registrar Check-in">Check-in</button>
+          <button id="btnCheckout" type="button" class="btn" title="Registrar Checkout">Checkout</button>
+          <button id="btnRemover" type="button" class="btn danger">Remover</button>
+          <button id="btnCancelar" type="button" class="btn ghost">Cancelar</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <script src="/static/script.js"></script>
+</body>
+</html>
