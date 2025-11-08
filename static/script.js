@@ -173,11 +173,19 @@ function renderCalendar(){
     });
 
     const occ = reservations.filter(r => (r.checkin <= iso && r.checkout >= iso));
+
     if (occ.length) {
-      occ.sort((a,b) => a.chale - b.chale);
+      const slots = [null, null, null];
+      occ.forEach(r => {
+        const idx = Number(r.chale) - 1;
+        if (idx >= 0 && idx < slots.length) slots[idx] = r;
+      });
+
       const wrap = document.createElement('div');
       wrap.className = 'bar-wrap';
-      occ.forEach(r => {
+
+      slots.forEach(r => {
+        if (!r) return;
         const bar = document.createElement('div');
         bar.className = 'res-bar';
         if (r.status === 'checkin') bar.classList.add('green');
@@ -195,6 +203,7 @@ function renderCalendar(){
 
         wrap.appendChild(bar);
       });
+
       cell.appendChild(wrap);
     }
 
