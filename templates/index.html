@@ -51,17 +51,18 @@
 
         <label>WhatsApp
           <div class="whatsapp-row">
-            <input id="whatsapp" type="tel" inputmode="numeric" maxlength="9" placeholder="Somente 9 dígitos" />
+            <input id="whatsapp" type="tel" inputmode="numeric" placeholder="(99) 99999-9999" maxlength="15" autocomplete="off" />
             <button id="openWhatsApp" type="button" class="wa-btn" title="Abrir WhatsApp">
-              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-                <path d="M20.5 3.5L3.5 20.5V23h2.5L23 5.5V3.5z" fill="currentColor"/>
+              <!-- Ícone oficial WhatsApp -->
+              <svg width="24" height="24" viewBox="0 0 32 32" aria-hidden="true">
+                <path fill="currentColor" d="M16.04 3C9.41 3 4 8.42 4 15.06c0 2.66.87 5.12 2.34 7.11L4 29l6.06-2.27A12 12 0 1 0 16.04 3ZM10.59 23.4l-.38-.23l-3.6 1.35l1.33-3.51l-.25-.37a9.18 9.18 0 1 1 3.93 3.37Zm10.22-6.54c-.14-.23-.51-.37-1.06-.65s-.65-.37-.93.13s-1.22 1.37-1.49 1.65s-.51.28-.94.09a7.46 7.46 0 0 1-3.24-2.79c-.25-.43-.27-.76 0-1s.57-.65.85-1s.38-.56.57-.93s.1-.7-.05-.94s-1.06-2.57-1.45-3.53s-.8-.81-1.1-.82h-.93a1.8 1.8 0 0 0-1.29.6A5.47 5.47 0 0 0 9 11.77c0 3.22 2.39 6.35 2.63 6.79s4.62 6.85 11.1 6.85A5.09 5.09 0 0 0 25 22.1v-.92c0-.37-.23-.56-.37-.68Z"/>
               </svg>
             </button>
           </div>
         </label>
 
         <label>Valor (R$)
-          <input id="valor" type="text" placeholder="1.111,00" />
+          <input id="valor" type="text" placeholder="1.111,00" autocomplete="off" />
         </label>
 
         <label>Nº de pessoas
