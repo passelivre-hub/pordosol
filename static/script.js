@@ -12,7 +12,7 @@ function formatDateISO(d) {
   const dd = String(d.getDate()).padStart(2,'0');
   return `${yyyy}-${mm}-${dd}`;
 }
-function isoToDisplay(iso) { // YYYY-MM-DD -> DD/MM/YYYY
+function isoToDisplay(iso) { 
   if (!iso) return '';
   const [y,m,d] = iso.split('-');
   return `${d}/${m}/${y}`;
@@ -155,10 +155,17 @@ function renderCalendar(){
 
     cell.addEventListener('click', async () => {
       const matches = reservations.filter(r => (r.checkin <= iso && r.checkout >= iso));
-      if (matches.length === 1) {
-        await openReservationEdit(matches[0].id);
-      } else if (matches.length > 1) {
-        // open first by default
+
+      if (matches.length > 1) {
+        const pick = prompt(
+          'Selecione a reserva:\n' +
+          matches.map((m,i) => `${i+1}. Chalé ${m.chale} - ${m.nome}`).join('\n')
+        );
+        const index = Number(pick) - 1;
+        if (matches[index]) {
+          await openReservationEdit(matches[index].id);
+        }
+      } else if (matches.length === 1) {
         await openReservationEdit(matches[0].id);
       } else {
         openNewReservation(iso);
@@ -173,16 +180,19 @@ function renderCalendar(){
       occ.forEach(r => {
         const bar = document.createElement('div');
         bar.className = 'res-bar';
-        if (r.status === 'checkin') {
-          bar.classList.add('green');
-        } else if (r.observacoes && r.observacoes.trim().length > 0) {
-          bar.classList.add('note');
-        } else {
-          bar.classList.add('blue');
-        }
+        if (r.status === 'checkin') bar.classList.add('green');
+        else if (r.observacoes && r.observacoes.trim().length > 0) bar.classList.add('note');
+        else bar.classList.add('blue');
+
         const label = document.createElement('div');
         label.textContent = `C${r.chale} • ${r.nome || '—'}`;
         bar.appendChild(label);
+
+        bar.addEventListener('click', (ev) => {
+          ev.stopPropagation();
+          openReservationEdit(r.id);
+        });
+
         wrap.appendChild(bar);
       });
       cell.appendChild(wrap);
@@ -191,7 +201,6 @@ function renderCalendar(){
     days.appendChild(cell);
   }
 
-  // nav handlers
   qs('#prevMonth').addEventListener('click', () => {
     visibleMonth--;
     if (visibleMonth < 0) { visibleMonth = 11; visibleYear--; }
@@ -226,12 +235,13 @@ async function openReservationEdit(id) {
     resId.value = r.id;
     chaleEl.value = String(r.chale || 1);
     nomeEl.value = r.nome || '';
-    whatsappEl.value = (r.whatsapp || '').replace(/\D/g,'').slice(-9) || '';
+    whatsappEl.value = (r.whatsapp || '');
     valorEl.value = centsToBr(r.valor_cents || 0);
     pessoasEl.value = r.pessoas || 2;
     checkinEl.value = r.checkin || '';
     checkoutEl.value = r.checkout || '';
     observacoesEl.value = r.observacoes || '';
+
     if (r.status === 'checkin') {
       btnCheckin.style.display = 'none';
       btnCheckout.style.display = 'inline-block';
@@ -239,6 +249,7 @@ async function openReservationEdit(id) {
       btnCheckin.style.display = 'inline-block';
       btnCheckout.style.display = 'none';
     }
+
     btnRemover.style.display = 'inline-block';
     showModal('edit');
   } catch (err) {
@@ -261,6 +272,7 @@ reservationForm.addEventListener('submit', async (e) => {
     checkout: checkoutEl.value,
     observacoes: observacoesEl.value.trim()
   };
+
   if (!payload.checkin || !payload.checkout) {
     alert('Preencha check-in e check-out');
     return;
@@ -345,28 +357,31 @@ btnCancelar.addEventListener('click', () => {
 /* WhatsApp open */
 openWhatsAppBtn.addEventListener('click', () => {
   const phone = whatsappEl.value.replace(/\D/g,'');
-  if (!phone || phone.length < 8) {
-    alert('Preencha um número de WhatsApp com 9 dígitos (somente dígitos).');
+  if (!phone || phone.length < 11) {
+    alert('Preencha um número de WhatsApp válido.');
     return;
   }
   window.open(`https://wa.me/55${phone}`, '_blank');
 });
 
-/* Masks */
-// whatsapp: digits only, max 9
+/* Máscara WhatsApp (XX) XXXXX-XXXX */
 whatsappEl.addEventListener('input', (e) => {
-  e.target.value = e.target.value.replace(/\D/g,'').slice(0,9);
+  let v = e.target.value.replace(/\D/g,'').slice(0,11);
+  if (v.length > 2 && v.length <= 7) {
+    v = `(${v.slice(0,2)}) ${v.slice(2)}`;
+  } else if (v.length > 7) {
+    v = `(${v.slice(0,2)}) ${v.slice(2,7)}-${v.slice(7)}`;
+  }
+  e.target.value = v;
 });
 
-// valor mask: input numeric, format Brazillian currency
+/* Máscara valor R$ */
 valorEl.addEventListener('input', (e) => {
-  let v = e.target.value;
-  v = v.replace(/[^\d]/g,'');
-  if (v === '') { e.target.value = ''; return; }
-  while (v.length < 3) v = '0' + v;
+  let v = e.target.value.replace(/\D/g,'');
+  if (!v) v = '0';
+  while (v.length < 3) v = '0'+v;
   const cents = v.slice(-2);
-  let integer = v.slice(0, -2);
-  integer = integer.replace(/\B(?=(\d{3})+(?!\d))/g, '.');
+  let integer = v.slice(0,-2).replace(/\B(?=(\d{3})+(?!\d))/g, '.');
   e.target.value = `${integer},${cents}`;
 });
 
@@ -386,5 +401,4 @@ function init(){
   visibleMonth = currentDate.getMonth();
   loadReservations();
 }
-
 init();
